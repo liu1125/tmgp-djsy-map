@@ -7,21 +7,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>妄想山海-混沌地图</title>
   <!-- 引入样式文件 -->
-  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@9.0.0/ol.css"/>
+  <link rel="stylesheet" href="./static/lib/element-plus/index.css">
+  <link rel="stylesheet" href="./static/lib/ol/ol.css"/>
 
   <link rel="stylesheet" href="./static/index.css"/>
 
   <!-- 引入 Vue 和 Vant 的 JS 文件 -->
-  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
-  <script src="https://unpkg.com/element-plus"></script>
-  <script src="https://unpkg.com/@element-plus/icons-vue"></script>
-  <script src="https://cdn.jsdelivr.net/npm/ol@9.0.0/dist/ol.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.js"></script>
+  <script src="./static/lib/vue/vue.global.prod.js"></script>
+  <script src="./static/lib/element-plus/index.full.min.js"></script>
+  <script src="./static/lib/element-plus/icons-vue/index.iife.min.js"></script>
+  <script src="./static/lib/ol/ol.js"></script>
 
   <script>
   var _hmt = _hmt || [];
-  (function() {
+  (function () {
     var hm = document.createElement("script");
     hm.src = "https://hm.baidu.com/hm.js?b80ae031c154d6dc96f4a9e585c07d0b";
     var s = document.getElementsByTagName("script")[0];
@@ -312,18 +311,30 @@ const App = {
         }
       }))
 
-      let groupBy = _.groupBy(pointProperties, 'lb')
-      let map = Object.entries(groupBy).map(([k, v]) => ({
+      let res = groupBy(pointProperties, 'lb')
+      let map = Object.entries(res).map(([k, v]) => ({
         label: k,
         options: v,
       }))
       selectOptions.value = map
-      form.value.checkList = _.map(map, 'label')
+      form.value.checkList = map.map(i => i.label)
     })
 
     onMounted(() => {
       mapInstance.setTarget('map-box')
     })
+
+    function groupBy(arr = [], by) {
+      const res = {}
+      arr.forEach(i => {
+        let key = i[by]
+        if (!(key in res)) {
+          res[key] = []
+        }
+        res[key].push(i)
+      })
+      return res
+    }
 
     function location(ids = []) {
       let features = pointFeatures
@@ -365,7 +376,7 @@ const App = {
           }
         )
       }
-      topSearch.value = _.map(filter, 'uid')
+      topSearch.value = filter.map(i => i.uid)
       location(topSearch.value)
       drawerVisible.value = false
     }
