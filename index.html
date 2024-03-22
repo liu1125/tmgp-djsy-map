@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="renderer" content="webkit">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>妄想山海-混沌地图</title>
+  <!-- 引入样式文件 -->
+  <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@9.0.0/ol.css"/>
+
+  <link rel="stylesheet" href="./static/index.css"/>
+
+  <!-- 引入 Vue 和 Vant 的 JS 文件 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"></script>
+  <script src="https://unpkg.com/element-plus"></script>
+  <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ol@9.0.0/dist/ol.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.js"></script>
+</head>
+<body>
+<div id="app" style="display: flex;flex-direction: column;">
+  <div style="display: flex;padding: 10px;">
+    <el-select
+      v-model="topSearch"
+      placeholder="请输入要查询的风景点名称"
+      clearable
+      filterable
+      multiple
+      collapse-tags
+      :max-collapse-tags="10"
+      filterable
+      no-match-text="未查询到匹配数据"
+      no-data-text="未查询到匹配数据"
+      @clear="location()"
+    >
+      <template #header>
+        <el-checkbox-group v-model="form.checkList">
+          <el-checkbox-button v-for="(op,idx) in selectOptions" :class="{['fl'+op.label]:colorful,colorful}" :key="idx"
+                              :value="op.label">
+            {{ op.label }}({{ op.options?.length || 0 }})
+          </el-checkbox-button>
+        </el-checkbox-group>
+      </template>
+      <el-option-group
+        v-for="group in selectOptions"
+        :key="group.label"
+        :label="group.label"
+        :class="{['fl'+group.label]:colorful}"
+      >
+        <template v-if="form.checkList.includes(group.label)">
+          <el-option
+            v-for="item in group.options"
+            :key="item.uid"
+            :label="item.name"
+            :value="item.uid"
+          >
+            <span style="float: left">{{ item.name }}</span>
+            <span style="float: right;color: var(--el-text-color-secondary);font-size: 13px;">
+            {{ item.qypname }} - {{ item.qyname }}
+          </span>
+          </el-option>
+        </template>
+      </el-option-group>
+    </el-select>
+    <el-button type="primary" style="margin-left: 8px;" :icon="Search" @click="location(topSearch)">查找</el-button>
+    <el-button type="info" @click="drawerVisible = true">批量导入</el-button>
+  </div>
+
+  <div id="map-box" class="ol-unselectable" style="flex: 1;position:relative;">
+    <div style="display: flex;padding: 0 10px 10px;position:absolute;z-index: 1;">
+      <el-switch
+        v-model="colorful"
+        size="large"
+        inline-prompt
+        active-text="多色显示"
+        inactive-text="单色显示">
+      </el-switch>
+    </div>
+  </div>
+
+  <el-drawer v-model="drawerVisible" append-to-body direction="btt" size="70%">
+    <el-form :model="form" label-width="auto">
+      <el-form-item label="批量提取：">
+        <el-input
+          v-model="form.desc"
+          type="textarea"
+          :placeholder="'请输入风景点名称,每个一行或以空格分割\n如：\n倚风崖\n临渊壁\n浑天谷\n鏖战野 凭高峰 峥嵘谷 九曲湾\n鏖战 高峰 峥嵘 九曲'"
+          :autosize="{ minRows: 4, maxRows: 10 }"
+          clearable
+        >
+        </el-input>
+        <div style="margin-top: 8px;">
+          <el-button type="primary" @click="form.desc =''">清空</el-button>
+          <el-button type="primary" @click="extract">提取</el-button>
+        </div>
+      </el-form-item>
+      <el-divider></el-divider>
+      <el-form-item label=" ">
+        <div>
+          <!-- 1:732875 96-->
+          <el-link link tag="a" href="./static/img/鹰眼图-无标记.png" download="鹰眼图-无标记.png">
+            下载《鹰眼图-无标记.png》（387KB）
+          </el-link>
+          <el-link link tag="a" href="./static/img/鹰眼图-无标记-多色.png" download="鹰眼图-无标记.png">
+            下载《鹰眼图-无标记-多色.png》（372KB）
+          </el-link>
+
+          <!-- 1:366438 96-->
+          <el-link link tag="a" href="./static/img/单色带标记.png" download="单色带标记.png">
+            下载《单色带标记.png》（1.21MB）
+          </el-link>
+          <el-link link tag="a" href="./static/img/多色带标记.png" download="多色带标记.png">
+            下载《多色带标记.png》（1.29MB）
+          </el-link>
+        </div>
+      </el-form-item>
+    </el-form>
+  </el-drawer>
+</div>
+
+<script>
+const {createApp, ref, onMounted, watch, computed} = Vue
+const {ElMessage, ElMessageBox} = ElementPlus
+const {Search} = ElementPlusIconsVue
+const cm = {
+  '灵智': '#e61515',
+  '灵能': '#e66215',
+  '灵智之核': '#e6ae15',
+  '无礼包': '#1596e6',
+}
+
+const App = {
+  setup() {
+    const topSearch = ref([])
+    const selectOptions = ref([])
+    const drawerVisible = ref(false)
+    const colorful = ref(true)
+    const girdHighlightUid = ref(null)
+    const form = ref({
+      desc: ''
+    })
+
+    const view = new ol.View({
+      enableRotation: false,
+      constrainOnlyCenter: true,
+      center: [0, 0],
+      zoom: 11,
+      minZoom: 10,
+      maxZoom: 14,
+      extent: [25, -28775, 32025, 3225],
+      padding: [20, 20, 20, 20]
+    })
+    const mapInstance = new ol.Map({
+      view,
+      controls: [],
+      interactions: ol.interaction.defaults.defaults({
+        // altShiftDragRotate: false,
+        // pinchRotate: false,
+        zoomDelta: true
+      })
+    })
+
+    mapInstance.on('pointermove', function (evt) {
+      mapInstance.getTargetElement().style.cursor = mapInstance.hasFeatureAtPixel(evt.pixel, {
+        layerFilter: l => l === pointVectorLayer,
+        hitTolerance: 30
+      }) ? 'pointer' : '';
+    });
+
+    const areaVectorLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        url: './static/geojson/区域范围.geojson',
+        format: new ol.format.GeoJSON(),
+      }),
+      style: (f) => {
+        return new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: `rgb(${f.get('fillColor')})`
+          }),
+          text: new ol.style.Text({
+            font: '16px sans-serif',
+            text: f.get('name'),
+            fill: new ol.style.Fill({
+              color: [255, 255, 255, 1],
+            }),
+            stroke: new ol.style.Stroke({
+              color: [168, 50, 153, 0.6],
+              width: 4,
+            }),
+            padding: [2, 2, 2, 2],
+          }),
+        })
+      },
+      visible: true,
+      zIndex: 1,
+      map: mapInstance
+    });
+    window.mapInstance = mapInstance
+    window.areaVectorLayer = areaVectorLayer
+
+    areaVectorLayer.getSource().once('featuresloadend', () => {
+      let extent = areaVectorLayer.getSource().getExtent()
+      view.fit(extent)
+    })
+
+    const girdVectorLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        url: './static/geojson/网格.geojson',
+        format: new ol.format.GeoJSON(),
+      }),
+      style: (f) => {
+        let color = '#e3e3e388'
+
+        if (girdHighlightUid.value) {
+          let extent = pointVectorSource.getFeatureById(girdHighlightUid.value).getGeometry().getExtent()
+          let some = f.getGeometry().intersectsExtent(extent)
+          if (some) {
+            color = '#e61515'
+          }
+        }
+        return new ol.style.Style({
+          stroke: new ol.style.Stroke({
+            color,
+            width: 1,
+          })
+        })
+      },
+      visible: true,
+      zIndex: 2,
+      map: mapInstance
+    });
+
+    const pointVectorSource = new ol.source.Vector({
+      url: './static/geojson/风景点.geojson',
+      format: new ol.format.GeoJSON(),
+    })
+    const pointVectorLayer = new ol.layer.Vector({
+      source: pointVectorSource,
+      style: (f) => {
+        let showText = view.getZoom() > 12
+        let textStrokeColor = '#e3e3e3'
+        if (girdHighlightUid.value === f.getId()) {
+          textStrokeColor = '#4feaa2'
+        }
+
+        return new ol.style.Style({
+          image: new ol.style.Circle({
+            fill: new ol.style.Fill({
+              color: colorful.value ? cm[f.get('lb')] : '#e61515',
+            }),
+            stroke: new ol.style.Stroke({
+              color: '#e3e3e388',
+              width: 1,
+            }),
+            radius: 3,
+          }),
+          text: showText ? new ol.style.Text({
+            font: '14px sans-serif',
+            text: f.get('name'),
+            fill: new ol.style.Fill({
+              color: colorful.value ? cm[f.get('lb')] : '#ff0000',
+            }),
+            stroke: new ol.style.Stroke({
+              color: textStrokeColor,
+              width: 4,
+            }),
+            padding: [2, 2, 1, 2],
+            offsetY: -14,
+          }) : null,
+        })
+      },
+      visible: true,
+      zIndex: 3,
+      map: mapInstance
+    });
+
+    mapInstance.on('click', (f) => {
+      console.log(f, typeof f, 'f')
+      let featureAtPixel = mapInstance.getFeaturesAtPixel(f.pixel, {
+        layerFilter: l => l === pointVectorLayer
+      })[0]
+      if (featureAtPixel) {
+        girdHighlightUid.value = featureAtPixel.getId()
+      }
+    })
+
+    const pointFeatures = []
+    const pointProperties = []
+
+    pointVectorSource.once('featuresloadend', () => {
+      pointFeatures.push(...pointVectorSource.getFeatures())
+      pointProperties.push(...pointFeatures.map((f, idx) => {
+        f.setId(idx + 1)
+        f.set('lb', f.get('lb') || '无礼包')
+
+        let {geometry, ...attrs} = f.getProperties()
+        return {
+          ...attrs,
+          uid: f.getId()
+        }
+      }))
+
+      let groupBy = _.groupBy(pointProperties, 'lb')
+      let map = Object.entries(groupBy).map(([k, v]) => ({
+        label: k,
+        options: v,
+      }))
+      selectOptions.value = map
+      form.value.checkList = _.map(map, 'label')
+    })
+
+    onMounted(() => {
+      mapInstance.setTarget('map-box')
+    })
+
+    function location(ids = []) {
+      let features = pointFeatures
+
+      if (ids.length && ids[0]) {
+        features = pointFeatures.filter(f => ids.includes(f.getId()))
+      }
+
+      girdHighlightUid.value = ids[0]
+
+      pointVectorSource.clear()
+      pointVectorSource.addFeatures(features)
+      view.fit(pointVectorSource.getExtent())
+    }
+
+    async function extract() {
+      let desc = form.value.desc
+      desc = desc.replaceAll(/\n| +/g, ' ')
+      if (!desc.length) {
+        ElMessage({
+          message: '请先输入内容',
+          grouping: true,
+          type: 'warning',
+        })
+        return
+      }
+      const arr = desc.split(' ')
+
+      let filter = pointProperties.filter(p => arr.some(i => p.name.includes(i)))
+
+      if (topSearch.value?.length) {
+        await ElMessageBox.confirm(
+          '多选风景点已经存在值，是否覆盖?',
+          '提示',
+          {
+            distinguishCancelAndClose: true,
+            confirmButtonText: '覆盖',
+            cancelButtonText: '取消',
+          }
+        )
+      }
+      topSearch.value = _.map(filter, 'uid')
+      location(topSearch.value)
+      drawerVisible.value = false
+    }
+
+    watch(colorful, () => {
+      pointVectorLayer.setSource(null)
+      setTimeout(() => {
+        pointVectorLayer.setSource(pointVectorSource)
+      }, 0)
+    })
+
+    watch(girdHighlightUid, (val) => {
+      if (!val) {
+        return
+      }
+      const featureById = pointVectorLayer.getSource().getFeatureById(val)
+      const extent = featureById.getGeometry().getExtent()
+      view.fit(extent, {
+        duration: 300
+      })
+    })
+
+    return {
+      topSearch,
+      selectOptions,
+      drawerVisible,
+      colorful,
+      form,
+      Search: ElementPlusIconsVue.Search,
+      location,
+      extract,
+    }
+  }
+}
+
+function isMobileDevice() {
+  let userAgent = navigator.userAgent || navigator.vendor || window.opera;
+  return /android|avantgo|blackberry|iemobile|ipad|iphone|ipod|opera mini|opera mobi|palm|pocket|psp|series([46])0|symbian|windows ce|windows phone|xda|xiino/i.test(userAgent)
+}
+
+const app = createApp(App)
+app.use(ElementPlus, {size: isMobileDevice() ? 'small' : 'default'});
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+  app.component(key, component)
+}
+app.mount('#app');
+</script>
+</body>
+</html>
