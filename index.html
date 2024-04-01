@@ -349,7 +349,9 @@ const App = {
 
       pointVectorSource.clear()
       pointVectorSource.addFeatures(features)
-      view.fit(pointVectorSource.getExtent())
+      view.fit(pointVectorSource.getExtent(), {
+        duration: 300
+      })
     }
 
     async function extract() {
@@ -383,7 +385,7 @@ const App = {
       drawerVisible.value = false
     }
 
-    watch([() => form.value.checkList, topSearch], () => {
+    watch(() => form.value.checkList, () => {
       const lbs = form.value.checkList
       const topSearchs = topSearch.value
       const filter = pointFeatures.filter(f => lbs.includes(f.get('lb')) || topSearchs.includes(f.getId()))
@@ -391,6 +393,10 @@ const App = {
 
       pointVectorSource.clear()
       pointVectorSource.addFeatures(filter)
+    })
+
+    watch(topSearch, (val) => {
+      location(val)
     })
 
     watch(colorful, () => {
