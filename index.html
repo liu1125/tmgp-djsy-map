@@ -43,6 +43,7 @@
       no-match-text="未查询到匹配数据"
       no-data-text="未查询到匹配数据"
       @clear="location()"
+      @remove-tag="location(topSearch,true)"
     >
       <template #header>
         <el-checkbox-group v-model="form.checkList">
@@ -213,7 +214,7 @@ const App = {
 
     areaVectorLayer.getSource().once('featuresloadend', () => {
       let extent = areaVectorLayer.getSource().getExtent()
-      view.fit(extent)
+      view.fit(extent, {})
     })
 
     const girdVectorLayer = new ol.layer.Vector({
@@ -288,12 +289,13 @@ const App = {
     });
 
     mapInstance.on('click', (f) => {
-      console.log(f, typeof f, 'f')
       let featureAtPixel = mapInstance.getFeaturesAtPixel(f.pixel, {
         layerFilter: l => l === pointVectorLayer
       })[0]
       if (featureAtPixel) {
-        girdHighlightUid.value = featureAtPixel.getId()
+        let uid = featureAtPixel.getId()
+        girdHighlightUid.value = uid
+        highlightByUid(uid)
       }
     })
 
@@ -339,19 +341,28 @@ const App = {
     }
 
     function location(ids = []) {
-      let features = pointFeatures
+      let features
 
-      if (ids.length && ids[0]) {
+      let firstId = ids[0]
+      if (ids.length && firstId) {
         features = pointFeatures.filter(f => ids.includes(f.getId()))
+      } else {
+        const lbs = form.value.checkList
+        features = pointFeatures.filter(f => lbs.includes(f.get('lb')))
       }
-
-      girdHighlightUid.value = ids[0]
 
       pointVectorSource.clear()
       pointVectorSource.addFeatures(features)
-      view.fit(pointVectorSource.getExtent(), {
-        duration: 300
-      })
+
+      girdHighlightUid.value = firstId
+
+      if (firstId) {
+        highlightByUid(firstId)
+      } else {
+        view.fit(pointVectorSource.getExtent(), {
+          duration: 300
+        })
+      }
     }
 
     async function extract() {
@@ -385,6 +396,14 @@ const App = {
       drawerVisible.value = false
     }
 
+    function highlightByUid(uid) {
+      const featureById = pointVectorLayer.getSource().getFeatureById(uid)
+      const extent = featureById.getGeometry().getExtent()
+      view.fit(extent, {
+        duration: 300
+      })
+    }
+
     watch(() => form.value.checkList, () => {
       const lbs = form.value.checkList
       const topSearchs = topSearch.value
@@ -395,26 +414,11 @@ const App = {
       pointVectorSource.addFeatures(filter)
     })
 
-    watch(topSearch, (val) => {
-      location(val)
-    })
-
     watch(colorful, () => {
       pointVectorLayer.setSource(null)
       setTimeout(() => {
         pointVectorLayer.setSource(pointVectorSource)
       }, 0)
-    })
-
-    watch(girdHighlightUid, (val) => {
-      if (!val) {
-        return
-      }
-      const featureById = pointVectorLayer.getSource().getFeatureById(val)
-      const extent = featureById.getGeometry().getExtent()
-      view.fit(extent, {
-        duration: 300
-      })
     })
 
     return {
