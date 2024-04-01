@@ -52,13 +52,15 @@
           </el-checkbox-button>
         </el-checkbox-group>
       </template>
-      <el-option-group
+      <template
         v-for="group in selectOptions"
         :key="group.label"
-        :label="group.label"
-        :class="{['fl'+group.label]:colorful}"
       >
-        <template v-if="form.checkList.includes(group.label)">
+        <el-option-group
+          v-show="form.checkList.includes(group.label)"
+          :label="group.label"
+          :class="{['fl'+group.label]:colorful}"
+        >
           <el-option
             v-for="item in group.options"
             :key="item.uid"
@@ -70,8 +72,8 @@
             {{ item.qypname }} - {{ item.qyname }}
           </span>
           </el-option>
-        </template>
-      </el-option-group>
+        </el-option-group>
+      </template>
     </el-select>
     <el-button type="primary" style="margin-left: 8px;" :icon="Search" @click="location(topSearch)">查找</el-button>
     <el-button type="info" @click="drawerVisible = true">批量导入</el-button>
@@ -380,6 +382,16 @@ const App = {
       location(topSearch.value)
       drawerVisible.value = false
     }
+
+    watch([() => form.value.checkList, topSearch], () => {
+      const lbs = form.value.checkList
+      const topSearchs = topSearch.value
+      const filter = pointFeatures.filter(f => lbs.includes(f.get('lb')) || topSearchs.includes(f.getId()))
+      console.log(filter, typeof filter, 'filter')
+
+      pointVectorSource.clear()
+      pointVectorSource.addFeatures(filter)
+    })
 
     watch(colorful, () => {
       pointVectorLayer.setSource(null)
