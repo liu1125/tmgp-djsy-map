@@ -15,5 +15,5 @@
 * 单色带标记.png（1.21MB）
 ![单色带标记.png（1.21MB）](./static/img/单色带标记.png)
 
-* 单色带标记.png（1.29MB）
+* 多色带标记.png（1.29MB）
 ![多色带标记.png（1.29MB）](./static/img/多色带标记.png)
