@@ -38,7 +38,7 @@
       filterable
       multiple
       collapse-tags
-      :max-collapse-tags="10"
+      :max-collapse-tags="isMobile ? 10 : 20"
       filterable
       no-match-text="未查询到匹配数据"
       no-data-text="未查询到匹配数据"
@@ -150,6 +150,7 @@ const App = {
     const drawerVisible = ref(false)
     const colorful = ref(true)
     const girdHighlightUid = ref(null)
+    const isMobile = isMobileDevice()
     const form = ref({
       desc: ''
     })
@@ -408,7 +409,6 @@ const App = {
       const lbs = form.value.checkList
       const topSearchs = topSearch.value
       const filter = pointFeatures.filter(f => lbs.includes(f.get('lb')) || topSearchs.includes(f.getId()))
-      console.log(filter, typeof filter, 'filter')
 
       pointVectorSource.clear()
       pointVectorSource.addFeatures(filter)
@@ -422,6 +422,7 @@ const App = {
     })
 
     return {
+      isMobile,
       topSearch,
       selectOptions,
       drawerVisible,
