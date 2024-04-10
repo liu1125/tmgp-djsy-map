@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="description" content="妄想山海-混沌风景点地图">
   <meta name="keywords" content="妄想山海,妄想山海混沌风景点,妄想山海混沌地图,妄想山海混沌风景点">
-  <meta http-equiv="Cache-Control" content="max-age=3600" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="renderer" content="webkit">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
@@ -22,13 +21,13 @@
   <script src="./static/lib/ol/ol.js"></script>
 
   <script>
-  var _hmt = _hmt || [];
-  (function () {
-    var hm = document.createElement("script");
-    hm.src = "https://hm.baidu.com/hm.js?b80ae031c154d6dc96f4a9e585c07d0b";
-    var s = document.getElementsByTagName("script")[0];
-    s.parentNode.insertBefore(hm, s);
-  })();
+  // var _hmt = _hmt || [];
+  // (function () {
+  //   var hm = document.createElement("script");
+  //   hm.src = "https://hm.baidu.com/hm.js?b80ae031c154d6dc96f4a9e585c07d0b";
+  //   var s = document.getElementsByTagName("script")[0];
+  //   s.parentNode.insertBefore(hm, s);
+  // })();
   </script>
 </head>
 <body>
@@ -112,27 +111,152 @@
         </div>
       </el-form-item>
       <el-divider></el-divider>
+      <el-form-item label="百度识图">
+        <el-input
+          v-model="form.result"
+          placeholder="请粘贴百度文字识别JSON结果"
+          clearable
+        >
+        </el-input>
+        <div style="margin-top: 8px;">
+          <el-button type="info" @click="baiduDialogVisible=true">说明</el-button>
+          <el-button type="info" tag="a" href="https://ai.baidu.com/tech/ocr/general" target="_blank">
+            前往百度文字识别
+          </el-button>
+          <el-button type="primary" @click="baiduExtract">提取</el-button>
+        </div>
+      </el-form-item>
+      <el-divider></el-divider>
       <el-form-item label=" ">
         <div>
           <!-- 1:732875 96-->
-          <el-link link tag="a" href="./static/img/鹰眼图-无标记.png" download="鹰眼图-无标记.png">
+          <el-link href="./static/img/鹰眼图-无标记.png" download="鹰眼图-无标记.png">
             下载《鹰眼图-无标记.png》（387KB）
           </el-link>
-          <el-link link tag="a" href="./static/img/鹰眼图-无标记-多色.png" download="鹰眼图-无标记-多色.png">
+          <el-link href="./static/img/鹰眼图-无标记-多色.png" download="鹰眼图-无标记-多色.png">
             下载《鹰眼图-无标记-多色.png》（372KB）
           </el-link>
 
           <!-- 1:366438 96-->
-          <el-link link tag="a" href="./static/img/单色带标记.png" download="单色带标记.png">
+          <el-link href="./static/img/单色带标记.png" download="单色带标记.png">
             下载《单色带标记.png》（1.21MB）
           </el-link>
-          <el-link link tag="a" href="./static/img/多色带标记.png" download="多色带标记.png">
+          <el-link href="./static/img/多色带标记.png" download="多色带标记.png">
             下载《多色带标记.png》（1.29MB）
           </el-link>
         </div>
       </el-form-item>
     </el-form>
   </el-drawer>
+
+  <el-dialog v-model="baiduDialogVisible" :show-close="false" fullscreen append-to-body>
+    <template #header="{ close, titleId, titleClass }">
+      <div style="display: flex;flex-direction: row;justify-content: space-between;">
+        <h4 :id="titleId" :class="titleClass">百度文字识别步骤说明</h4>
+        <div style="padding-right: 30px;">
+          <el-affix :offset="20">
+            <el-button :icon="CloseBold" type="danger" circle @click="close"/>
+          </el-affix>
+        </div>
+      </div>
+    </template>
+    <el-steps direction="vertical">
+      <el-step title="访问 百度AI开放平台" status="process">
+        <template #description>
+          <div>
+            <el-link target="_blank" href="https://ai.baidu.com/tech/ocr/general" download="多色带标记.png">
+              https://ai.baidu.com/tech/ocr/general
+            </el-link>
+          </div>
+          <el-image
+            :style="{ width: isMobile ? '100%' : '50%' }"
+            style="border: 1px solid #e3e3e3;vertical-align: top;"
+            :src="baiduAiImg[0]"
+            fit="contain"
+            :preview-src-list="none"
+            :initial-index="0"
+            :infinite="false"
+          >
+          </el-image>
+        </template>
+      </el-step>
+      <el-step title="登录百度账号" status="process">
+        <template #description>
+          <el-image
+            :style="{ width: isMobile ? '100%' : '50%' }"
+            style="border: 1px solid #e3e3e3;vertical-align: top;"
+            :src="baiduAiImg[1]"
+            fit="contain"
+            :preview-src-list="baiduAiImg"
+            :initial-index="1"
+            :infinite="false"
+          >
+          </el-image>
+        </template>
+      </el-step>
+      <el-step title="识别风景点图片，复制识别结果" status="process">
+        <template #description>
+          <el-image
+            :style="{ width: isMobile ? '100%' : '50%' }"
+            style="border: 1px solid #e3e3e3;vertical-align: top;"
+            :src="baiduAiImg[2]"
+            fit="contain"
+            :preview-src-list="baiduAiImg"
+            :initial-index="2"
+            :infinite="false"
+          >
+          </el-image>
+          <el-image
+            :style="{ width: isMobile ? '100%' : '50%' }"
+            style="border: 1px solid #e3e3e3;vertical-align: top;"
+            :src="baiduAiImg[3]"
+            fit="contain"
+            :preview-src-list="baiduAiImg"
+            :initial-index="3"
+            :infinite="false"
+          >
+          </el-image>
+        </template>
+      </el-step>
+      <el-step title="回到查询系统，粘贴结果" status="process">
+        <template #description>
+          <el-image
+            :style="{ width: isMobile ? '100%' : '50%' }"
+            style="border: 1px solid #e3e3e3;vertical-align: top;"
+            :src="baiduAiImg[4]"
+            fit="contain"
+            :preview-src-list="baiduAiImg"
+            :initial-index="4"
+            :infinite="false"
+          >
+          </el-image>
+        </template>
+      </el-step>
+    </el-steps>
+    <el-divider></el-divider>
+    <el-steps direction="vertical">
+      <el-step title="后话" status="success" :icon="Coin">
+        <template #description>
+          <el-image
+            :style="{ width: isMobile ? '100%' : '50%' }"
+            style="border: 1px solid #e3e3e3;vertical-align: top;"
+            :src="baiduAiImg[5]"
+            fit="contain"
+            :preview-src-list="[baiduAiImg[5]]"
+          >
+          </el-image>
+        </template>
+      </el-step>
+    </el-steps>
+    <template #footer2>
+      <div class="dialog-footer">
+        <el-button @click="centerDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="centerDialogVisible = false">
+          Confirm
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
 </div>
 
 <script>
@@ -154,9 +278,20 @@ const App = {
     const colorful = ref(true)
     const girdHighlightUid = ref(null)
     const isMobile = isMobileDevice()
+    const baiduDialogVisible = ref(false)
     const form = ref({
-      desc: ''
+      desc: '',
+      result: ''
     })
+
+    const baiduAiImg = [
+      './static/img/baiduai/home.png',
+      './static/img/baiduai/login.png',
+      './static/img/baiduai/upload.png',
+      './static/img/baiduai/demo-fjd.png',
+      './static/img/baiduai/res.png',
+      './static/img/baiduai/qiong.png',
+    ]
 
     const view = new ol.View({
       enableRotation: false,
@@ -194,7 +329,7 @@ const App = {
         const showText = view.getZoom() < 13
         return new ol.style.Style({
           stroke: new ol.style.Stroke({
-            color:'#ffffff',
+            color: '#ffffff',
             width: 1,
           }),
           fill: new ol.style.Fill({
@@ -419,6 +554,51 @@ const App = {
       const arr = desc.split(' ')
 
       let filter = pointProperties.filter(p => arr.some(i => p.name.includes(i)))
+      filter = filter.sort((a, b) => (arr.indexOf(a.name) - arr.indexOf(b.name)))
+
+      if (topSearch.value?.length) {
+        await ElMessageBox.confirm(
+          '多选风景点已经存在值，是否覆盖?',
+          '提示',
+          {
+            distinguishCancelAndClose: true,
+            confirmButtonText: '覆盖',
+            cancelButtonText: '取消',
+          }
+        )
+      }
+      topSearch.value = filter.map(i => i.uid)
+      location(topSearch.value)
+      drawerVisible.value = false
+    }
+
+    async function baiduExtract() {
+      let desc = form.value.result
+
+      if (!desc.length) {
+        ElMessage({
+          message: '请先粘贴内容',
+          grouping: true,
+          type: 'warning',
+        })
+        return
+      }
+
+      try {
+        desc = JSON.parse(desc)
+      } catch (e) {
+        ElMessage({
+          message: '粘贴内容有误，请注意前后的括号',
+          grouping: true,
+          type: 'warning',
+        })
+        return
+      }
+
+      const arr = desc.words_result.map(i => i.words)
+
+      let filter = pointProperties.filter(p => arr.some(i => p.name.includes(i)))
+      filter = filter.sort((a, b) => (arr.indexOf(a.name) - arr.indexOf(b.name)))
 
       if (topSearch.value?.length) {
         await ElMessageBox.confirm(
@@ -467,9 +647,14 @@ const App = {
       drawerVisible,
       colorful,
       form,
+      baiduDialogVisible,
+      baiduAiImg,
       Search: ElementPlusIconsVue.Search,
+      Coin: ElementPlusIconsVue.Coin,
+      CloseBold: ElementPlusIconsVue.CloseBold,
       location,
       extract,
+      baiduExtract
     }
   }
 }

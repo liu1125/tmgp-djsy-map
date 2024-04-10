@@ -64,3 +64,11 @@ html, body, #app {
 .el-link {
   font-size: 12px;
 }
+
+.el-step.is-vertical .el-step__main {
+  padding-bottom: 20px;
+}
+
+.el-step.is-vertical .el-step__description {
+  padding-top: 6px;
+}
