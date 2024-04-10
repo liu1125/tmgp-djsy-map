@@ -191,6 +191,7 @@ const App = {
         format: new ol.format.GeoJSON(),
       }),
       style: (f) => {
+        const showText = view.getZoom() < 13
         return new ol.style.Style({
           stroke: new ol.style.Stroke({
             color:'#ffffff',
@@ -201,7 +202,7 @@ const App = {
           }),
           text: new ol.style.Text({
             font: '16px sans-serif',
-            text: f.get('name'),
+            text: showText ? f.get('name') : '',
             fill: new ol.style.Fill({
               color: [255, 255, 255, 1],
             }),
@@ -218,12 +219,43 @@ const App = {
       map: mapInstance
     });
     window.mapInstance = mapInstance
-    window.areaVectorLayer = areaVectorLayer
 
     areaVectorLayer.getSource().once('featuresloadend', () => {
       let extent = areaVectorLayer.getSource().getExtent()
       view.fit(extent, {})
     })
+
+    const specialAreaVectorLayer = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        url: './static/geojson/特殊点位区域范围.geojson',
+        format: new ol.format.GeoJSON(),
+      }),
+      style: (f) => {
+        let showText = view.getZoom() > 12
+        return new ol.style.Style({
+          fill: new ol.style.Fill({
+            color: `rgb(${f.get('fillColor')})`
+          }),
+          text: showText ? new ol.style.Text({
+            font: '12px sans-serif',
+            text: f.get('name'),
+            overflow: true,
+            fill: new ol.style.Fill({
+              color: [255, 255, 255, 1],
+            }),
+            stroke: new ol.style.Stroke({
+              color: [168, 50, 153, 0.6],
+              width: 4,
+            }),
+            padding: [2, 2, 2, 2],
+          }) : null,
+        })
+      },
+      visible: true,
+      zIndex: 1,
+      minZoom: 12.5,
+      map: mapInstance
+    });
 
     const girdVectorLayer = new ol.layer.Vector({
       source: new ol.source.Vector({

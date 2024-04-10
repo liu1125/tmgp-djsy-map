@@ -1,0 +1,9 @@
+{
+"type": "FeatureCollection",
+"name": "区域范围",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:EPSG::3857" } },
+"features": [
+{ "type": "Feature", "properties": { "name": "化骨泊/长恨道\n特殊区", "pname": "极化", "fillColor": "208,185,123" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 275, -14275 ], [ 1275, -14275 ], [ 1275, -13275 ], [ 275, -13275 ], [ 275, -14275 ] ] ] } },
+{ "type": "Feature", "properties": { "name": "化骨泊/长恨道\n特殊区", "pname": "极化", "fillColor": "208,185,123" }, "geometry": { "type": "Polygon", "coordinates": [ [ [ 2275, -14275 ], [ 3275, -14275 ], [ 3275, -13275 ], [ 2275, -13275 ], [ 2275, -14275 ] ] ] } }
+]
+}
