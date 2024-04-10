@@ -50,7 +50,7 @@
 { "type": "Feature", "properties": { "name": "浊生崖", "qyname": "中部荒土", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 13775, -15275 ] } },
 { "type": "Feature", "properties": { "name": "魍魉山", "qyname": "中部荒土", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 12775, -16275 ] } },
 { "type": "Feature", "properties": { "name": "魔骨墟", "qyname": "中部荒土", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 19275, -17775 ] } },
-{ "type": "Feature", "properties": { "name": "轮回原", "qyname": "中部荒土", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 20775, -18025 ] } },
+{ "type": "Feature", "properties": { "name": "轮回原", "qyname": "中部荒土", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 20775, -18275 ] } },
 { "type": "Feature", "properties": { "name": "巨嗜川", "qyname": "万灵渊", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 19275, -19775 ] } },
 { "type": "Feature", "properties": { "name": "孑立野", "qyname": "万灵渊", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 18775, -20775 ] } },
 { "type": "Feature", "properties": { "name": "穹庐野", "qyname": "万灵渊", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 19275, -21775 ] } },
