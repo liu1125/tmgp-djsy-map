@@ -229,7 +229,7 @@
 { "type": "Feature", "properties": { "name": "邪见原", "qyname": "天裂", "qypname": "天裂", "lb": "灵智" }, "geometry": { "type": "Point", "coordinates": [ 23275, -6275 ] } },
 { "type": "Feature", "properties": { "name": "病酒坡", "qyname": "天裂", "qypname": "天裂", "lb": "灵智" }, "geometry": { "type": "Point", "coordinates": [ 24775, -6775 ] } },
 { "type": "Feature", "properties": { "name": "倦鸟峦", "qyname": "天裂", "qypname": "天裂", "lb": "灵智" }, "geometry": { "type": "Point", "coordinates": [ 22275, -7775 ] } },
-{ "type": "Feature", "properties": { "name": "尖风道", "qyname": "天裂", "qypname": "天裂", "lb": "灵智" }, "geometry": { "type": "Point", "coordinates": [ 22311.9, -10025 ] } },
+{ "type": "Feature", "properties": { "name": "尖风道", "qyname": "天裂", "qypname": "天裂", "lb": "灵智" }, "geometry": { "type": "Point", "coordinates": [ 22311.9, -8775 ] } },
 { "type": "Feature", "properties": { "name": "望水坡", "qyname": "天裂", "qypname": "天裂", "lb": "灵智" }, "geometry": { "type": "Point", "coordinates": [ 20311.9, -11025 ] } },
 { "type": "Feature", "properties": { "name": "开天原", "qyname": "天裂", "qypname": "天裂", "lb": "灵智" }, "geometry": { "type": "Point", "coordinates": [ 19775, -10775 ] } },
 { "type": "Feature", "properties": { "name": "太荒墟", "qyname": "天裂", "qypname": "天裂", "lb": "灵智" }, "geometry": { "type": "Point", "coordinates": [ 18775, -11275 ] } },
