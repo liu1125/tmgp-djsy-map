@@ -72,7 +72,7 @@
 { "type": "Feature", "properties": { "name": "无为涯", "qyname": "中部荒土", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 30275, -26775 ] } },
 { "type": "Feature", "properties": { "name": "坠星原", "qyname": "中部荒土", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 26275, -8275 ] } },
 { "type": "Feature", "properties": { "name": "黑山坳", "qyname": "中部荒土", "qypname": "中部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 25275, -9525 ] } },
-{ "type": "Feature", "properties": { "name": "红土原", "qyname": "地涌", "qypname": "地涌", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 29025, -11275 ] } },
+{ "type": "Feature", "properties": { "name": "红土原", "qyname": "地涌", "qypname": "地涌", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 27775, -10775 ] } },
 { "type": "Feature", "properties": { "name": "迷魂阵", "qyname": "血涂野", "qypname": "南部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 2775, -18775 ] } },
 { "type": "Feature", "properties": { "name": "雾隐原", "qyname": "血涂野", "qypname": "南部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 3775, -19275 ] } },
 { "type": "Feature", "properties": { "name": "天外野", "qyname": "血涂野", "qypname": "南部荒土", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 4275, -19775 ] } },
