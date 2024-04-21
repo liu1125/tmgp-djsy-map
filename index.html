@@ -115,6 +115,7 @@
         <el-input
           v-model="form.result"
           placeholder="请粘贴百度文字识别JSON结果"
+          :formatter="(value) => value.replace(/[\s\t]/g, '')"
           clearable
         >
         </el-input>
