@@ -3,7 +3,7 @@
 ## 介绍
 妄想山海-混沌风景点全地图，风景点位置查询，手机/电脑访问均可。
 
-## [页面传送门](https://liushuai1125.gitee.io/tmgp-djsy-map)
+## [页面传送门](https://liu1125.github.io/tmgp-djsy-map/)
 
 ## 图片预览
 * 鹰眼图-无标记.png（370KB）
