@@ -125,7 +125,7 @@
 { "type": "Feature", "properties": { "name": "远行道", "qyname": "极化", "qypname": "极化", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 8275, -10275 ] } },
 { "type": "Feature", "properties": { "name": "寄世川", "qyname": "极化", "qypname": "极化", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 5775, -10775 ] } },
 { "type": "Feature", "properties": { "name": "苍茫道", "qyname": "极化", "qypname": "极化", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 4775, -10775 ] } },
-{ "type": "Feature", "properties": { "name": "惘然道", "qyname": "极化", "qypname": "极化", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 3775, -11775 ] } },
+{ "type": "Feature", "properties": { "name": "惘然道", "qyname": "极化", "qypname": "极化", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 4275, -11775 ] } },
 { "type": "Feature", "properties": { "name": "峰回山", "qyname": "极化", "qypname": "极化", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 3775, -12775 ] } },
 { "type": "Feature", "properties": { "name": "接天原", "qyname": "极化", "qypname": "极化", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 3275, -12275 ] } },
 { "type": "Feature", "properties": { "name": "离恨丘", "qyname": "极化", "qypname": "极化", "lb": "" }, "geometry": { "type": "Point", "coordinates": [ 2775, -11275 ] } },
